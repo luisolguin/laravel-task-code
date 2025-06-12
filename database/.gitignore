@@ -1,2 +1,3 @@
 *.sqlite*
+/bitnami_myapp
 bitnami_myapp
