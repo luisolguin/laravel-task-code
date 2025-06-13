@@ -19,7 +19,9 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'lastname',
         'email',
+        'nickname',
         'password',
     ];
 
@@ -44,5 +46,13 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+    
+    /**
+     * Define la relación uno a muchos con Notes.
+     */
+    public function notes()
+    {
+        return $this->hasMany(Note::class);
     }
 }
