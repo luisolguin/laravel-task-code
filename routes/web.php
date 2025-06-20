@@ -27,9 +27,18 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout'); // E
 // Ruta protegida para el home/dashboard
 Route::middleware(['auth'])->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
+    // Ruta para mostrar notas importantes
+    Route::get('/home/important', [HomeController::class, 'index', 'filter' => 'important'])->name('notes.important');
+
+    // Ruta para mostrar notas por etiqueta (con parámetro comodín para el nombre de la etiqueta)
+    // El 'whereAlphaNumeric' asegura que el nombre de la etiqueta solo contenga letras y números.
+    Route::get('/home/tag/{tag}', [HomeController::class, 'index'])
+        ->name('notes.byTag')
+        ->where('tag', '[a-zA-Z0-9]+'); // Restricción para solo letras y números
+
     // Ruta para guardar una nueva nota
     Route::post('/notes', [NoteController::class, 'store'])->name('notes.store');
-    // ... (otras rutas relacionadas con notas irán aquí más adelante)
+
 });
 
 // Redirección inicial a la página de login si no estás autenticado

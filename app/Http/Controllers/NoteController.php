@@ -8,6 +8,7 @@ use App\Models\Tag;  // Importa tu modelo Tag
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth; // Para obtener el usuario autenticado
 use Illuminate\Validation\ValidationException; // Para manejar errores de validación
+use Illuminate\Support\Str;
 
 class NoteController extends Controller
 {
