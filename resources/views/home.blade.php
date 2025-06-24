@@ -103,6 +103,7 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.08);
             margin-bottom: 15px;
             border: 1px solid #eee;
+            cursor: pointer;
         }
         .note-item h4 {
             margin-top: 0;
@@ -205,6 +206,29 @@
             flex-direction: column;
             box-sizing: border-box;
             border: 1px solid #ffe082; /* Borde sutil amarillo */
+            position: relative;
+        }
+        .note-create-card .close-card-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #e0e0e0; /* Gris claro */
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            cursor: pointer;
+            color: #666;
+            transition: background-color 0.2s;
+            line-height: 1; /* Asegura que la 'x' esté centrada */
+            padding: 0;
+        }
+        .note-create-card .close-card-button:hover {
+            background-color: #ccc;
         }
         .note-create-card input[type="text"] {
             width: 100%;
@@ -301,7 +325,117 @@
         .pagination li a:hover { z-index: 2; color: #0056b3; background-color: #e9ecef; border-color: #dee2e6; }
         .pagination li.active span { z-index: 3; color: #fff; background-color: #007bff; border-color: #007bff; }
         .pagination li.disabled span { color: #6c757d; pointer-events: none; background-color: #fff; border-color: #dee2e6; }
-   
+        /* Overlay de Edición de Nota */
+        .note-edit-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Fondo semitransparente */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000; /* Asegura que esté por encima de todo */
+            display: none; /* Oculto por defecto */
+        }
+
+        .note-edit-card {
+            background-color: #fffacd; /* Amarillo suave */
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+            width: 100%;
+            max-width: 600px; /* Un poco más grande que la de creación */
+            max-height: 90vh; /* Máxima altura de la ventana */
+            overflow-y: auto; /* Scroll si el contenido es muy largo */
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+            border: 1px solid #ffe082;
+            position: relative;
+        }
+
+        .note-edit-card .close-card-button { /* Reutiliza estilos del botón de cerrar */
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #e0e0e0;
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            cursor: pointer;
+            color: #666;
+            transition: background-color 0.2s;
+            line-height: 1;
+            padding: 0;
+            z-index: 1001; /* Asegura que esté sobre los campos */
+        }
+        .note-edit-card .close-card-button:hover {
+            background-color: #ccc;
+        }
+
+        .note-edit-card input[type="text"] {
+            width: 100%;
+            padding: 10px 0;
+            border: none;
+            border-bottom: 1px solid #f0e68c;
+            background-color: transparent;
+            font-size: 1.4em; /* Título más grande para edición */
+            font-weight: bold;
+            margin-bottom: 15px;
+            outline: none;
+        }
+        .note-edit-card textarea {
+            width: 100%;
+            padding: 10px 0;
+            border: none;
+            background-color: transparent;
+            font-size: 1.1em;
+            line-height: 1.6;
+            resize: vertical;
+            min-height: 150px; /* Altura mínima mayor para edición */
+            overflow-y: hidden;
+            margin-bottom: 20px;
+            outline: none;
+            flex-grow: 1; /* Permite que el textarea crezca */
+        }
+        .note-edit-card .action-buttons-bottom {
+            display: flex;
+            justify-content: space-between; /* Botones a izquierda y derecha */
+            align-items: center;
+            margin-top: 10px;
+        }
+        .note-edit-card .action-buttons-bottom button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .note-edit-card .action-buttons-bottom .save-button {
+            background-color: #007bff; /* Azul para guardar */
+            color: white;
+        }
+        .note-edit-card .action-buttons-bottom .save-button:hover {
+            background-color: #0056b3;
+        }
+        .note-edit-card .action-buttons-bottom .delete-button {
+            background-color: #dc3545; /* Rojo para eliminar */
+            color: white;
+            display: flex; /* Para centrar el icono */
+            align-items: center;
+            gap: 5px; /* Espacio entre icono y texto */
+        }
+        .note-edit-card .action-buttons-bottom .delete-button:hover {
+            background-color: #c82333;
+        }
     </style>
 </head>
 <body>
@@ -348,6 +482,9 @@
         </div>
 
         <div id="noteCreateCard" class="note-create-card">
+            <button type="button" class="close-card-button" onclick="closeNoteCard()">
+                &times; 
+            </button>
             <form id="createNoteForm" method="POST" action="{{ route('notes.store') }}">
                 @csrf
                 <input type="text" name="title" id="noteTitle" placeholder="Título" value="{{ old('title') }}">
@@ -379,7 +516,7 @@
             <h3>Tus Notas</h3>
 
             @forelse ($notes as $note)
-                <div class="note-item">
+                <div class="note-item" onclick="openEditOverlay({{ $note->id }})">
                     <h4>
                         {{ $note->title }}
                         @if ($note->is_important)
@@ -412,6 +549,31 @@
         <i class="fas fa-plus"></i>
     </div>
 
+    {{-- Overlay de Edición de Nota --}}
+    <div id="noteEditOverlay" class="note-edit-overlay">
+        <div class="note-edit-card">
+            <button type="button" class="close-card-button" onclick="closeEditOverlay()">
+                &times;
+            </button>
+
+            <form id="editNoteForm" method="POST">
+                @csrf
+                @method('PUT') <input type="hidden" name="note_id" id="editNoteId"> <input type="text" name="title" id="editNoteTitle" placeholder="Título" required>
+                {{-- No se usa @error aquí porque los errores se manejan con JS para el overlay --}}
+
+                <textarea name="content" id="editNoteContent" placeholder="Escribe tu nota aquí..." oninput="autoExpand(this)" required></textarea>
+                {{-- No se usa @error aquí --}}
+
+                <div class="action-buttons-bottom">
+                    <button type="button" class="delete-button" onclick="confirmDeleteNote()">
+                        <i class="fas fa-trash"></i> Eliminar
+                    </button>
+
+                    <button type="submit" class="save-button">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <script>
         function openNav() {
@@ -425,9 +587,13 @@
         function toggleNoteCard() {
             const noteCard = document.getElementById('noteCreateCard');
             if (noteCard.style.display === 'flex') {
-                noteCard.style.display = 'none';
+                //noteCard.style.display = 'none';
+                 closeNoteCard();
             } else {
                 noteCard.style.display = 'flex';
+                document.getElementById('noteTitle').focus();
+                // Asegurarse de que el textarea se auto-expanda si ya tiene contenido (ej. después de un old())
+                autoExpand(document.getElementById('noteContent'));
                 // Opcional: enfocar el campo de título al abrir
                 document.getElementById('noteTitle').focus();
             }
@@ -450,7 +616,99 @@
             @if (!$errors->any() && !session('success') && !session('error'))
                 document.getElementById('noteCreateCard').style.display = 'none';
             @endif
+            // Ocultar overlay de edición al cargar si no hay errores de edición
+            const editOverlay = document.getElementById('noteEditOverlay');
+            if (editOverlay && !session('edit_errors')) { // Asumiendo que podrías pasar errores de edición a la sesión
+                 editOverlay.style.display = 'none';
+            }
         });
+
+        function closeNoteCard() {
+            document.getElementById('noteCreateCard').style.display = 'none';
+        }
+
+         // --- FUNCIONES PARA EL OVERLAY DE EDICIÓN ---
+
+        // Función para abrir el overlay de edición y cargar la nota
+        async function openEditOverlay(noteId) {
+            const overlay = document.getElementById('noteEditOverlay');
+            const editNoteForm = document.getElementById('editNoteForm');
+            const editNoteIdInput = document.getElementById('editNoteId');
+            const editNoteTitleInput = document.getElementById('editNoteTitle');
+            const editNoteContentTextarea = document.getElementById('editNoteContent');
+
+            try {
+                // Obtener los datos de la nota vía AJAX
+                const response = await fetch(`/notes/${noteId}`);
+                if (!response.ok) {
+                    //throw new Error(`HTTP error! status: ${response.status}`);
+                     let errorMessage = 'Error desconocido al cargar la nota.';
+                    try {
+                        const errorData = await response.json();
+                        errorMessage = errorData.message || errorMessage;
+                    } catch (e) {
+                        // Si no es JSON, usa el estado HTTP
+                        errorMessage = `Error ${response.status}: ${response.statusText}`;
+                    }
+                    throw new Error(errorMessage); 
+                }
+                const note = await response.json();
+
+                // Rellenar los campos del formulario de edición
+                editNoteIdInput.value = note.id;
+                editNoteTitleInput.value = note.title;
+                editNoteContentTextarea.value = note.content;
+
+                // Actualizar la acción del formulario para apuntar a la ruta de actualización
+                editNoteForm.action = `/notes/${note.id}`;
+
+                // Auto-expandir el textarea para el contenido cargado
+                autoExpand(editNoteContentTextarea);
+
+                // Mostrar el overlay
+                overlay.style.display = 'flex';
+                editNoteTitleInput.focus(); // Enfocar el título
+            } catch (error) {
+                console.error("Error al cargar la nota para edición:", error);
+                alert("No se pudo cargar la nota para edición. Por favor, inténtalo de nuevo.");
+            }
+        }
+
+        // Función para cerrar el overlay de edición
+        function closeEditOverlay() {
+            document.getElementById('noteEditOverlay').style.display = 'none';
+            // Opcional: limpiar los campos del formulario si no quieres que retengan el contenido al cerrar
+            // document.getElementById('editNoteTitle').value = '';
+            // document.getElementById('editNoteContent').value = '';
+        }
+
+        // Función para confirmar la eliminación de la nota
+        function confirmDeleteNote() {
+            if (confirm('¿Estás seguro de que quieres eliminar esta nota? Esta acción no se puede deshacer.')) {
+                const noteId = document.getElementById('editNoteId').value;
+                const deleteForm = document.createElement('form');
+                deleteForm.method = 'POST';
+                deleteForm.action = `/notes/${noteId}`;
+                deleteForm.style.display = 'none';
+
+                const csrfToken = document.querySelector('meta[name="csrf-token"]') ? document.querySelector('meta[name="csrf-token"]').content : '{{ csrf_token() }}';
+
+                const methodInput = document.createElement('input');
+                methodInput.type = 'hidden';
+                methodInput.name = '_method';
+                methodInput.value = 'DELETE';
+                deleteForm.appendChild(methodInput);
+
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = '_token';
+                csrfInput.value = csrfToken;
+                deleteForm.appendChild(csrfInput);
+
+                document.body.appendChild(deleteForm);
+                deleteForm.submit();
+            }
+        }
     </script>
 </body>
 </html>

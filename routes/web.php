@@ -38,6 +38,12 @@ Route::middleware(['auth'])->group(function () {
 
     // Ruta para guardar una nueva nota
     Route::post('/notes', [NoteController::class, 'store'])->name('notes.store');
+    // Ruta para mostrar una nota específica para edición
+    Route::get('/notes/{note}', [NoteController::class, 'show'])->name('notes.show');
+    // Ruta para actualizar una nota
+    Route::put('/notes/{note}', [NoteController::class, 'update'])->name('notes.update');
+    // Ruta para eliminar una nota
+    Route::delete('/notes/{note}', [NoteController::class, 'destroy'])->name('notes.destroy');
 
 });
 

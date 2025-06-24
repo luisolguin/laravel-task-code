@@ -58,6 +58,98 @@ class NoteController extends Controller
         }
     }
 
+     /**
+     * Muestra una nota específica (útil para la edición).
+     * Laravel automáticamente inyecta la instancia de Note gracias al Model Binding.
+     *
+     * @param  \App\Models\Note  $note
+     * @return \Illuminate\Http\JsonResponse | \Illuminate\Http\RedirectResponse
+     */
+    public function show(Note $note)
+    {
+        // Asegúrate de que el usuario autenticado sea el dueño de la nota
+        if (Auth::id() !== $note->user_id) {
+            //abort(403, 'Acceso no autorizado.'); // O redirige con un mensaje de error
+            return response()->json(['message' => 'Acceso no autorizado a esta nota.'], 403);
+        }
+
+        // Si se solicita vía AJAX, se devuelve la nota como JSON.
+        // Esto es útil si construyes el overlay dinámicamente con JS.
+        //if (request()->expectsJson()) {
+        //    return response()->json($note->load('tags')); // Carga las etiquetas también
+        //}
+
+        // Si se accede directamente vía URL, puedes redirigir o mostrar una vista
+        // Por ahora, para este flujo, generalmente se llama vía AJAX.
+        //return redirect()->route('home')->with('error', 'Acceso directo a la edición de nota no permitido.');
+        return response()->json($note->load('tags'));
+    }
+
+    /**
+     * Actualiza la nota especificada en la base de datos.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Note  $note
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function update(Request $request, Note $note)
+    {
+        // Asegúrate de que el usuario autenticado sea el dueño de la nota
+        if (Auth::id() !== $note->user_id) {
+            return redirect()->route('home')->with('error', 'No tienes permiso para editar esta nota.');
+        }
+
+        try {
+            // 1. Validar los datos de entrada
+            $validatedData = $request->validate([
+                'title' => ['required', 'string', 'max:255'],
+                'content' => ['required', 'string'],
+                // Puedes añadir 'is_important' aquí si lo conviertes en un checkbox en el overlay
+                // 'is_important' => ['boolean'], // Ejemplo: si fuera un checkbox
+            ]);
+
+            // 2. Actualizar la nota
+            $note->update([
+                'title' => $validatedData['title'],
+                'content' => $validatedData['content'],
+                // 'is_important' => $request->has('is_important'), // Ejemplo para un checkbox
+            ]);
+
+            // 3. Re-procesar las etiquetas del contenido (para actualizar si cambiaron)
+            $this->processTags($note, $validatedData['content']);
+
+            return redirect()->route('home')->with('success', 'Nota actualizada exitosamente.');
+
+        } catch (ValidationException $e) {
+            return redirect()->back()->withErrors($e->errors())->withInput();
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Ocurrió un error al actualizar la nota: ' . $e->getMessage())->withInput();
+        }
+    }
+
+    /**
+     * Elimina la nota especificada de la base de datos.
+     *
+     * @param  \App\Models\Note  $note
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function destroy(Note $note)
+    {
+        // Asegúrate de que el usuario autenticado sea el dueño de la nota
+        if (Auth::id() !== $note->user_id) {
+            return redirect()->route('home')->with('error', 'No tienes permiso para eliminar esta nota.');
+        }
+
+        try {
+            $note->delete(); // Esto también eliminará las entradas en note_tag por 'onDelete('cascade')'
+
+            return redirect()->route('home')->with('success', 'Nota eliminada exitosamente.');
+
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Ocurrió un error al eliminar la nota: ' . $e->getMessage());
+        }
+    }
+
     /**
      * Método auxiliar para extraer y sincronizar etiquetas.
      *
@@ -87,4 +179,6 @@ class NoteController extends Controller
         // Esto adjunta las nuevas etiquetas y desvincula las etiquetas que ya no están en el contenido
         $note->tags()->sync($tagIds);
     }
+
+
 }
