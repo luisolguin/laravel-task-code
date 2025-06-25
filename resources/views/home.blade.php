@@ -436,6 +436,24 @@
         .note-edit-card .action-buttons-bottom .delete-button:hover {
             background-color: #c82333;
         }
+         /* Modificación para el input de búsqueda */
+        .search-bar input {
+            width: 100%;
+            padding: 10px 40px 10px 15px; /* Más padding a la derecha para el icono */
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            font-size: 16px;
+            background-color: #f0f2f5;
+            box-sizing: border-box; /* Para incluir padding en el width */
+        }
+        .search-bar .search-icon { /* Clase para el icono de búsqueda */
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #888;
+            cursor: pointer; /* Para indicar que el icono es clicable */
+        }
     </style>
 </head>
 <body>
@@ -461,8 +479,11 @@
         </div>
 
         <div class="search-bar">
-            <input type="text" placeholder="Buscar notas...">
-            <i class="fas fa-search"></i>
+             {{-- Formulario de Búsqueda --}}
+            <form action="{{ route('home') }}" method="GET" style="display: flex; width: 100%;">
+                <input type="text" name="search" id="search-input" placeholder="Buscar notas..." value="{{ $searchTerm ?? '' }}">
+                <i class="fas fa-search search-icon" onclick="this.closest('form').submit()"></i>
+            </form>
         </div>
 
         <div class="header-right">

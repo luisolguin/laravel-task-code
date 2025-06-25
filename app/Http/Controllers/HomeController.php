@@ -34,6 +34,7 @@ class HomeController extends Controller
         $notesQuery = $user->notes()->latest(); // Consulta base, ordenadas por más reciente
         $currentFilter = ''; // Para informar a la vista qué filtro está activo
         $filterMessage = null; // Mensaje a mostrar si no hay notas importantes
+        $searchTerm = $request->query('search');
 
         // Obtener todas las etiquetas únicas que pertenecen a las notas del usuario actual
         // Esto es más eficiente que cargar todas las etiquetas y luego filtrar.
@@ -48,7 +49,14 @@ class HomeController extends Controller
         // Lógica de filtrado
         // Detectar si el filtro es 'important' (desde la ruta /home/important)
         // Usamos Request::routeIs() para verificar si la ruta actual es 'notes.important'
-        if ($request->routeIs('notes.important')) {
+        if ($searchTerm) {
+            $notes = $notesQuery->where(function ($query) use ($searchTerm) {
+                $query->where('title', 'like', '%' . $searchTerm . '%')
+                      ->orWhere('content', 'like', '%' . $searchTerm . '%');
+            })->paginate(21);
+            $currentFilter = "Búsqueda: \"{$searchTerm}\"";
+        }
+        elseif ($request->routeIs('notes.important')) {
             $notes = $notesQuery->where('is_important', true)->paginate(21);
             $currentFilter = 'Notas Importantes';
             if (!$notesQuery->count() && $request->has('page') === false) {
@@ -78,6 +86,7 @@ class HomeController extends Controller
             'userTags' => $userTags, // Pasar las etiquetas del usuario a la vista
             'currentFilter' => $currentFilter, // Qué filtro está activo
             'filterMessage' => $filterMessage, // Mensaje para notas importantes vacías
+            'searchTerm' => $searchTerm, // Pasa el término de búsqueda a la vista
         ]);
     }
 }
