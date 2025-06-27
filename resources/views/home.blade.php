@@ -46,7 +46,8 @@
 
         <div class="header-right">
             <button class="action-button" title="Ajustes"><i class="fas fa-cog"></i></button>
-            <button class="action-button" title="Cambiar Tema"><i class="fas fa-moon"></i></button>
+            <button id="theme-toggle-button" class="action-button" title="Cambiar Tema" onclick="toggleDarkMode()">
+                <i id="theme-icon" class="fas fa-moon"></i> </button>
 
             <form action="{{ route('logout') }}" method="POST" style="display: inline;">
                 @csrf

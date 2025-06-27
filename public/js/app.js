@@ -100,6 +100,29 @@ function confirmDeleteNote() {
     }
 }
 
+// --- FUNCIONES PARA EL MODO OSCURO ---
+
+function toggleDarkMode() {
+    const body = document.body;
+    const themeToggleButton = document.getElementById('theme-toggle-button');
+    const themeIcon = document.getElementById('theme-icon');
+
+    body.classList.toggle('dark-mode'); // Alterna la clase 'dark-mode' en el body
+
+    // Guarda la preferencia en localStorage
+    if (body.classList.contains('dark-mode')) {
+        localStorage.setItem('theme', 'dark');
+        themeIcon.classList.remove('fa-moon');
+        themeIcon.classList.add('fa-sun');
+        themeToggleButton.title = "Cambiar a Tema Claro";
+    } else {
+        localStorage.setItem('theme', 'light');
+        themeIcon.classList.remove('fa-sun');
+        themeIcon.classList.add('fa-moon');
+        themeToggleButton.title = "Cambiar a Tema Oscuro";
+    }
+}
+
 // Código que se ejecuta cuando el DOM está completamente cargado
 document.addEventListener('DOMContentLoaded', function() {
     const createTextarea = document.getElementById('noteContent');
@@ -116,4 +139,28 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Ocultar overlay de edición al cargar la página
     document.getElementById('noteEditOverlay').style.display = 'none';
+
+     // --- Cargar la preferencia de tema al cargar la página ---
+    const savedTheme = localStorage.getItem('theme');
+    const body = document.body;
+    const themeIcon = document.getElementById('theme-icon');
+    const themeToggleButton = document.getElementById('theme-toggle-button');
+
+
+    if (savedTheme === 'dark') {
+        body.classList.add('dark-mode');
+        if (themeIcon) { // Asegúrate de que el icono exista antes de manipularlo
+            themeIcon.classList.remove('fa-moon');
+            themeIcon.classList.add('fa-sun');
+            themeToggleButton.title = "Cambiar a Tema Claro";
+        }
+    } else {
+        // Por defecto o si es 'light'
+        body.classList.remove('dark-mode');
+        if (themeIcon) {
+            themeIcon.classList.remove('fa-sun');
+            themeIcon.classList.add('fa-moon');
+            themeToggleButton.title = "Cambiar a Tema Oscuro";
+        }
+    }
 });

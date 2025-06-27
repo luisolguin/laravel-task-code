@@ -446,3 +446,204 @@
             color: #888;
             cursor: pointer; /* Para indicar que el icono es clicable */
         }
+
+        .w-5{
+            width: 50px;
+        }
+        .h-5{
+            height: 50px;
+        }
+        .relative {
+
+            font-size: x-large;
+        }
+
+    /*=================================== 
+    DARK MODE
+    ==================================== */
+
+    /* Estilos para el Modo Oscuro */
+body.dark-mode {
+    background-color: #1a1a1a; /* Fondo oscuro casi negro */
+    color: #e0e0e0; /* Texto claro */
+}
+
+body.dark-mode .header {
+    background-color: #2c2c2c; /* Encabezado más oscuro */
+    box-shadow: 0 2px 4px rgba(255,255,255,0.05);
+}
+
+body.dark-mode .menu-icon,
+body.dark-mode .action-button {
+    color: #a0a0a0; /* Iconos más claros */
+}
+
+body.dark-mode .app-name {
+    color: #f0f0f0; /* Nombre de la app más claro */
+}
+
+body.dark-mode .search-bar input {
+    background-color: #3a3a3a; /* Barra de búsqueda oscura */
+    border-color: #555;
+    color: #e0e0e0;
+}
+
+body.dark-mode .search-bar .search-icon {
+    color: #b0b0b0;
+}
+
+body.dark-mode .sidebar {
+    background-color: #2c2c2c; /* Sidebar oscuro */
+    box-shadow: 2px 0 5px rgba(0,0,0,0.3);
+}
+
+body.dark-mode .sidebar a {
+    color: #b0b0b0;
+}
+
+body.dark-mode .sidebar a:hover {
+    color: #0099ff; /* Un azul más brillante para hover en oscuro */
+    background-color: #3a3a3a;
+}
+
+body.dark-mode .sidebar .closebtn,
+body.dark-mode .sidebar-heading {
+    color: #e0e0e0;
+}
+
+body.dark-mode .sidebar a.active-filter {
+    background-color: #3a3a3a;
+    color: #0099ff;
+    border-left-color: #0099ff;
+}
+
+body.dark-mode .banner {
+    background-color: #2a3a4a; /* Banner más oscuro */
+    color: #7abaff;
+    box-shadow: 0 2px 4px rgba(255,255,255,0.05);
+}
+
+body.dark-mode .note-item {
+    background-color: #2c2c2c; /* Fondo de notas oscuro */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    border-color: #444;
+}
+
+body.dark-mode .note-item h4 {
+    color: #f0f0f0;
+}
+
+body.dark-mode .note-item p {
+    color: #d0d0d0;
+}
+
+body.dark-mode .note-item small {
+    color: #a0a0a0;
+}
+
+body.dark-mode .note-tags span {
+    background-color: #4a4a4a; /* Etiquetas más oscuras */
+    color: #d0d0d0;
+}
+
+body.dark-mode .fab-button {
+    background-color: #0099ff; /* Botón flotante más brillante */
+}
+body.dark-mode .fab-button:hover {
+    background-color: #0077cc;
+}
+
+/* Tarjeta de Creación/Edición de Nota en modo oscuro */
+body.dark-mode .note-create-card,
+body.dark-mode .note-edit-card {
+    background-color: #2a2a2a; /* Fondo de tarjeta oscuro */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+    border: 1px solid #4a4a4a;
+}
+
+body.dark-mode .note-create-card input[type="text"],
+body.dark-mode .note-create-card textarea,
+body.dark-mode .note-edit-card input[type="text"],
+body.dark-mode .note-edit-card textarea {
+    color: #e0e0e0;
+    border-bottom-color: #5a5a5a;
+}
+
+body.dark-mode .note-create-card input::placeholder,
+body.dark-mode .note-create-card textarea::placeholder,
+body.dark-mode .note-edit-card input::placeholder,
+body.dark-mode .note-edit-card textarea::placeholder {
+    color: #a0a0a0; /* Color de placeholder más claro */
+}
+
+body.dark-mode .note-create-card .close-card-button,
+body.dark-mode .note-edit-card .close-card-button {
+    background-color: #4a4a4a;
+    color: #b0b0b0;
+}
+body.dark-mode .note-create-card .close-card-button:hover,
+body.dark-mode .note-edit-card .close-card-button:hover {
+    background-color: #6a6a6a;
+}
+
+body.dark-mode .note-create-card button { /* Botón Guardar en tarjeta de creación */
+    background-color: #0099ff; /* Azul más oscuro para guardar */
+}
+body.dark-mode .note-create-card button:hover {
+    background-color: #0077cc;
+}
+
+body.dark-mode .note-edit-card .action-buttons-bottom .save-button {
+    background-color: #0099ff;
+}
+body.dark-mode .note-edit-card .action-buttons-bottom .save-button:hover {
+    background-color: #0077cc;
+}
+
+body.dark-mode .note-edit-card .action-buttons-bottom .delete-button {
+    background-color: #cc3333; /* Rojo un poco menos intenso */
+}
+body.dark-mode .note-edit-card .action-buttons-bottom .delete-button:hover {
+    background-color: #aa2222;
+}
+
+/* Mensajes de éxito/error en modo oscuro */
+body.dark-mode div[style*="background-color: #d4edda;"] { /* Éxito */
+    background-color: #2d4d3d !important;
+    color: #98d0a8 !important;
+    border-color: #3e6d4e !important;
+}
+body.dark-mode div[style*="background-color: #f8d7da;"] { /* Error */
+    background-color: #4d2d2d !important;
+    color: #d09898 !important;
+    border-color: #6d3e3e !important;
+}
+body.dark-mode div[style*="background-color: #fff3cd;"] { /* Advertencia (No notas importantes) */
+    background-color: #4d432d !important;
+    color: #d0c498 !important;
+    border-color: #6d633e !important;
+}
+
+
+/* Estilos para la paginación en modo oscuro */
+body.dark-mode .pagination li a,
+body.dark-mode .pagination li span {
+    color: #0099ff;
+    background-color: #3a3a3a;
+    border-color: #5a5a5a;
+}
+body.dark-mode .pagination li a:hover {
+    color: #0077cc;
+    background-color: #4a4a4a;
+    border-color: #6a6a6a;
+}
+body.dark-mode .pagination li.active span {
+    color: #fff;
+    background-color: #0099ff;
+    border-color: #0099ff;
+}
+body.dark-mode .pagination li.disabled span {
+    color: #7a7a7a;
+    background-color: #3a3a3a;
+    border-color: #5a5a5a;
+}
